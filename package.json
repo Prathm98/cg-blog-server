@@ -1,0 +1,36 @@
+{
+  "name": "cg-blog-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "concurrently \"npx tsc --watch\" \"nodemon ./build/index.js \""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prathm98/cg-blog-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Prathm98/cg-blog-server/issues"
+  },
+  "homepage": "https://github.com/Prathm98/cg-blog-server#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.11",
+    "concurrently": "^8.0.1",
+    "dotenv": "^16.0.3",
+    "jsdoc-rest-api": "^3.6.3",
+    "nodemon": "^2.0.22",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-validator": "^6.15.0",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.45"
+  }
+}
