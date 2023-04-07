@@ -47,7 +47,7 @@ export class BlogController{
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-            return res.send(AppResponse(null, 400, errors.array()));
+                return res.send(AppResponse(null, 400, errors.array()));
             }
 
             let blogObj = new Blog();

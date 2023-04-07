@@ -3,9 +3,11 @@ import express, {Request, Response} from 'express';
 import "reflect-metadata"
 import { createConnection } from "typeorm"
 import { BlogController } from './src/controller/blog.controller';
+import { UserController } from './src/controller/user.controller';
 
 class Server {
   private blogController!: BlogController;
+  private userController!: UserController;
   private app: express.Application;
 
   constructor(){
@@ -56,12 +58,14 @@ class Server {
     });
 
     this.blogController = new BlogController();
+    this.userController = new UserController();
 
     this.app.get( "/", async (req: Request, res: Response ) => {
       res.send( "Hello world!" );      
     });
 
-    this.app.use(`/api/blog/`,this.blogController.router); // Configure the new routes of the controller post
+    this.app.use(`/api/blog/`,this.blogController.router); // Configure the new routes of the controller blog
+    this.app.use(`/api/user/`,this.userController.router); // Configure the new routes of the controller user
   }
 
   

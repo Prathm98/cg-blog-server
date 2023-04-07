@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/Prathm98/cg-blog-server#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.15.11",
     "concurrently": "^8.0.1",
     "dotenv": "^16.0.3",
@@ -27,8 +29,10 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
+    "jsonwebtoken": "^9.0.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.45"

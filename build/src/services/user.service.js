@@ -14,33 +14,62 @@ const typeorm_1 = require("typeorm");
 const user_repository_1 = require("../repository/user.repository");
 class UserService {
     constructor() {
-        this.getUsers = () => __awaiter(this, void 0, void 0, function* () {
+        this.login = (username) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const users = yield this.userRepo.find();
-                return users;
+                const user = yield this.userRepo.findOne({
+                    where: {
+                        username,
+                    },
+                });
+                return user;
             }
-            catch (error) {
-                console.error(error);
+            catch (e) {
+                return null;
+            }
+        });
+        this.getUser = (username) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield this.userRepo.findOne({
+                    where: {
+                        username,
+                    },
+                    select: ['username', 'email']
+                });
+                return user;
+            }
+            catch (e) {
                 return null;
             }
         });
         this.getUserById = (id) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this.userRepo.findOne(id);
+                const user = yield this.userRepo.findOne({
+                    id
+                });
                 return user;
             }
-            catch (error) {
-                console.error(error);
+            catch (e) {
                 return null;
             }
         });
-        this.createBlog = (user) => __awaiter(this, void 0, void 0, function* () {
+        this.register = (user) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield this.userRepo.save(user);
+                let usrObj = yield this.userRepo.findOne({
+                    where: {
+                        username: user.username
+                    },
+                });
+                if (usrObj)
+                    return usrObj;
+                let res = yield this.userRepo.save({
+                    username: user.username,
+                    password: user.password,
+                    name: user.name,
+                    email: user.email
+                });
                 return res;
             }
-            catch (error) {
-                console.error(error);
+            catch (e) {
                 return null;
             }
         });

@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const blog_controller_1 = require("./src/controller/blog.controller");
+const user_controller_1 = require("./src/controller/user.controller");
 class Server {
     constructor() {
         if (process.env.NODE_ENV !== 'production') {
@@ -60,10 +61,12 @@ class Server {
                 name: "blog"
             });
             this.blogController = new blog_controller_1.BlogController();
+            this.userController = new user_controller_1.UserController();
             this.app.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
                 res.send("Hello world!");
             }));
-            this.app.use(`/api/blog/`, this.blogController.router); // Configure the new routes of the controller post
+            this.app.use(`/api/blog/`, this.blogController.router); // Configure the new routes of the controller blog
+            this.app.use(`/api/user/`, this.userController.router); // Configure the new routes of the controller user
         });
     }
     /**
