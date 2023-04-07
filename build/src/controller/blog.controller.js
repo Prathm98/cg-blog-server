@@ -102,6 +102,38 @@ class BlogController {
                 return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
             }
         });
+        /**
+            * @apiType POST
+            * @apiPath /api/blog/:blog_id/comment
+            * @apiBody {"message": "String"}
+            * @apiKey Comment Blog
+            * @apiDescription Add comment on the blog
+            * @apiResponse Returns boolean result
+            */
+        this.blogComment = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty()) {
+                    return res.send((0, AppResponse_1.AppResponse)(null, 400, errors.array()));
+                }
+                const blog_id = +req.params.blog_id;
+                const { id } = req.user;
+                const comment = req.body.message;
+                let blog = yield this.blogService.getBlogById(blog_id);
+                let user = yield this.userService.getUserById(id);
+                if (!blog) {
+                    return res.send((0, AppResponse_1.AppResponse)('Blog does not exist!', 400, {}));
+                }
+                if (!user) {
+                    return res.send((0, AppResponse_1.AppResponse)('Unauthorize request', 400, {}));
+                }
+                let result = yield this.blogService.createComment(blog, user, comment);
+                res.send((0, AppResponse_1.AppResponse)("Successful"));
+            }
+            catch (error) {
+                return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
+            }
+        });
         this.router = (0, express_1.Router)();
         this.routes();
         this.blogService = new blog_service_1.BlogService();
@@ -116,6 +148,9 @@ class BlogController {
         this.router.post('/:blog_id/like', authMiddleware_1.auth, [
             (0, express_validator_1.body)('doLike').exists().withMessage("doLike is required!")
         ], this.blogLike);
+        this.router.post('/:blog_id/comment', authMiddleware_1.auth, [
+            (0, express_validator_1.body)('message').exists().withMessage("Message is required!")
+        ], this.blogComment);
     }
 }
 exports.BlogController = BlogController;

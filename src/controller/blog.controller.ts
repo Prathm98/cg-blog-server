@@ -113,7 +113,45 @@ export class BlogController{
         }
     }
 
-      public routes(){
+    /**
+    	* @apiType POST
+    	* @apiPath /api/blog/:blog_id/comment
+    	* @apiBody {"message": "String"}
+    	* @apiKey Comment Blog
+    	* @apiDescription Add comment on the blog
+    	* @apiResponse Returns boolean result
+    	*/
+    public blogComment = async (req: Request, res: Response) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.send(AppResponse(null, 400, errors.array()));
+            }
+
+            const blog_id = +req.params.blog_id;
+            const {id} = req.user;
+            const comment = req.body.message;
+
+            let blog = await this.blogService.getBlogById(blog_id);
+            let user = await this.userService.getUserById(id);
+
+            if(!blog){
+                return res.send(AppResponse('Blog does not exist!', 400, {}))
+            }
+
+            if(!user){
+                return res.send(AppResponse('Unauthorize request', 400, {}))
+            }
+
+            let result = await this.blogService.createComment(blog, user, comment);
+        
+            res.send(AppResponse("Successful"));
+        } catch (error) {
+            return res.send(AppResponse('Server Error', 500, {}))
+        }
+    }
+
+    public routes(){
         this.router.get('/', this.index);
         this.router.post('/', auth, [
             body('title').exists().withMessage("Title is required!"),
@@ -122,6 +160,9 @@ export class BlogController{
         this.router.post('/:blog_id/like', auth, [
             body('doLike').exists().withMessage("doLike is required!")
         ], this.blogLike);
+        this.router.post('/:blog_id/comment', auth, [
+            body('message').exists().withMessage("Message is required!")
+        ], this.blogComment);
       }
 
 

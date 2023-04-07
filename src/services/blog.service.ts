@@ -1,23 +1,27 @@
 import { getConnection } from "typeorm";
 import { Blog } from "../database/entities/blog.entity";
+import { Comment } from "../database/entities/comments.entity";
 import { Like } from "../database/entities/likes.entity";
 import { User } from "../database/entities/user.entity";
 import { BlogRepository } from "../repository/blog.repository";
+import { CommentsRepository } from "../repository/comments.repository";
 import { LikesRepository } from "../repository/likes.repository";
 
 export class BlogService {
     private blogRepo: BlogRepository;
     private likesRepo: LikesRepository;
+    private commentsRepo: CommentsRepository;
 
     constructor(){
         this.blogRepo =  getConnection('blog').getCustomRepository(BlogRepository);
         this.likesRepo =  getConnection('blog').getCustomRepository(LikesRepository);
+        this.commentsRepo =  getConnection('blog').getCustomRepository(CommentsRepository);
     }
 
     public getBlogs = async () => {
         try {
             const blogs = await this.blogRepo.find({
-                relations: ['user'],
+                relations: ['user', 'comments', 'likes'],
                 select: ['user', 'title']
             });
 
@@ -79,6 +83,21 @@ export class BlogService {
                 })
 
             return like;
+        } catch (error) {
+            console.error(error)
+            return null;
+        }
+    }
+
+    public createComment = async (blog: Blog, user: User, comment: String) => {
+        try {
+            const commentObj = new Comment();
+            commentObj.user = user;
+            commentObj.blog = blog as Blog;
+            commentObj.comment = comment;
+
+            const res = await this.commentsRepo.save(commentObj);
+            return res;
         } catch (error) {
             console.error(error)
             return null;

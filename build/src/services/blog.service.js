@@ -11,15 +11,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogService = void 0;
 const typeorm_1 = require("typeorm");
+const comments_entity_1 = require("../database/entities/comments.entity");
 const likes_entity_1 = require("../database/entities/likes.entity");
 const blog_repository_1 = require("../repository/blog.repository");
+const comments_repository_1 = require("../repository/comments.repository");
 const likes_repository_1 = require("../repository/likes.repository");
 class BlogService {
     constructor() {
         this.getBlogs = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 const blogs = yield this.blogRepo.find({
-                    relations: ['user'],
+                    relations: ['user', 'comments', 'likes'],
                     select: ['user', 'title']
                 });
                 return blogs;
@@ -83,8 +85,23 @@ class BlogService {
                 return null;
             }
         });
+        this.createComment = (blog, user, comment) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const commentObj = new comments_entity_1.Comment();
+                commentObj.user = user;
+                commentObj.blog = blog;
+                commentObj.comment = comment;
+                const res = yield this.commentsRepo.save(commentObj);
+                return res;
+            }
+            catch (error) {
+                console.error(error);
+                return null;
+            }
+        });
         this.blogRepo = (0, typeorm_1.getConnection)('blog').getCustomRepository(blog_repository_1.BlogRepository);
         this.likesRepo = (0, typeorm_1.getConnection)('blog').getCustomRepository(likes_repository_1.LikesRepository);
+        this.commentsRepo = (0, typeorm_1.getConnection)('blog').getCustomRepository(comments_repository_1.CommentsRepository);
     }
 }
 exports.BlogService = BlogService;
