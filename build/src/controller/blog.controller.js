@@ -63,6 +63,45 @@ class BlogController {
                 return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
             }
         });
+        /**
+            * @apiType POST
+            * @apiPath /api/blog/:blog_id/like
+            * @apiBody {"doLike": "Boolean"}
+            * @apiKey Likes/dislikes Blog
+            * @apiDescription Like/dislike blog
+            * @apiResponse Returns boolean result
+            */
+        this.blogLike = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty()) {
+                    return res.send((0, AppResponse_1.AppResponse)(null, 400, errors.array()));
+                }
+                const blog_id = +req.params.blog_id;
+                const { id } = req.user;
+                const doLike = req.body.doLike;
+                let blog = yield this.blogService.getBlogById(blog_id);
+                let user = yield this.userService.getUserById(id);
+                if (!blog) {
+                    return res.send((0, AppResponse_1.AppResponse)('Blog does not exist!', 400, {}));
+                }
+                if (!user) {
+                    return res.send((0, AppResponse_1.AppResponse)('Unauthorize request', 400, {}));
+                }
+                let result;
+                if (doLike) {
+                    result = yield this.blogService.createLike(blog, user);
+                }
+                else {
+                    result = yield this.blogService.removeLike(blog, user);
+                }
+                console.log(doLike, result);
+                res.send((0, AppResponse_1.AppResponse)("Successful"));
+            }
+            catch (error) {
+                return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
+            }
+        });
         this.router = (0, express_1.Router)();
         this.routes();
         this.blogService = new blog_service_1.BlogService();
@@ -74,6 +113,9 @@ class BlogController {
             (0, express_validator_1.body)('title').exists().withMessage("Title is required!"),
             (0, express_validator_1.body)('description').exists().withMessage("Description is required!")
         ], this.create);
+        this.router.post('/:blog_id/like', authMiddleware_1.auth, [
+            (0, express_validator_1.body)('doLike').exists().withMessage("doLike is required!")
+        ], this.blogLike);
     }
 }
 exports.BlogController = BlogController;

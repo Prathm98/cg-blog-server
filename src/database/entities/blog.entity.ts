@@ -24,6 +24,6 @@ export class Blog {
     likes!: Like[]
 
     @OneToMany(() => Comment, (comment) => comment.blog)
-    comments!: Comment
+    comments!: Comment[]
 
 }

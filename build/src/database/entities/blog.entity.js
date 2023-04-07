@@ -42,7 +42,7 @@ __decorate([
 ], Blog.prototype, "likes", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => comments_entity_1.Comment, (comment) => comment.blog),
-    __metadata("design:type", comments_entity_1.Comment)
+    __metadata("design:type", Array)
 ], Blog.prototype, "comments", void 0);
 Blog = __decorate([
     (0, typeorm_1.Entity)('blogs')
