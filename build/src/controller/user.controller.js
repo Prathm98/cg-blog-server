@@ -93,9 +93,8 @@ class UserController {
                 }
                 const salt = yield bcryptjs_1.default.genSalt(10);
                 userObj.password = yield bcryptjs_1.default.hash(password, salt);
-                console.log('resObj', userObj);
                 let resObj = yield this.userService.register(userObj);
-                console.log('resObj', resObj);
+                // console.log('resObj', resObj)
                 if (!resObj)
                     return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
                 return res.send((0, AppResponse_1.AppResponse)('User registered successfully', 200, {}));

@@ -16,12 +16,13 @@ const AppResponse_1 = require("../utils/AppResponse");
 const express_validator_1 = require("express-validator");
 const blog_entity_1 = require("../database/entities/blog.entity");
 const user_service_1 = require("../services/user.service");
+const authMiddleware_1 = require("../middleware/authMiddleware");
 class BlogController {
     constructor() {
         /**
             * @apiType GET
             * @apiPath /api/blog
-            * @apiBody {"title": "String", "description":"String", "content": "String"}
+            * @apiBody NA
             * @apiKey Get Blog
             * @apiDescription Returns all blogs
             * @apiResponse Array of Blog objects
@@ -49,10 +50,11 @@ class BlogController {
                 if (!errors.isEmpty()) {
                     return res.send((0, AppResponse_1.AppResponse)(null, 400, errors.array()));
                 }
+                const { id } = req.user;
                 let blogObj = new blog_entity_1.Blog();
                 blogObj.title = req.body.title;
                 blogObj.description = req.body.description;
-                let user = yield this.userService.getUserById(1);
+                let user = yield this.userService.getUserById(id);
                 blogObj.user = user;
                 let blog = yield this.blogService.createBlog(blogObj);
                 res.send((0, AppResponse_1.AppResponse)(blog));
@@ -68,7 +70,7 @@ class BlogController {
     }
     routes() {
         this.router.get('/', this.index);
-        this.router.post('/', [
+        this.router.post('/', authMiddleware_1.auth, [
             (0, express_validator_1.body)('title').exists().withMessage("Title is required!"),
             (0, express_validator_1.body)('description').exists().withMessage("Description is required!")
         ], this.create);

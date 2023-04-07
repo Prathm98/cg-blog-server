@@ -102,9 +102,8 @@ export class UserController{
             const salt = await bcrypt.genSalt(10)
             userObj.password = await bcrypt.hash(password, salt)
     
-            console.log('resObj', userObj)
             let resObj = await this.userService.register(userObj)
-            console.log('resObj', resObj)
+            // console.log('resObj', resObj)
 
             if (!resObj) return res.send(AppResponse('Server Error', 500, {}))
             return res.send(AppResponse('User registered successfully', 200, {}))

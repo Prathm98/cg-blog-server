@@ -5,6 +5,7 @@ import { body, validationResult } from 'express-validator';
 import { Blog } from "../database/entities/blog.entity";
 import { UserService } from "../services/user.service";
 import { User } from "../database/entities/user.entity";
+import { auth } from "../middleware/authMiddleware";
 
 export class BlogController{
     public router: Router;
@@ -21,7 +22,7 @@ export class BlogController{
     /**
     	* @apiType GET
     	* @apiPath /api/blog
-    	* @apiBody {"title": "String", "description":"String", "content": "String"}
+    	* @apiBody NA
     	* @apiKey Get Blog
     	* @apiDescription Returns all blogs
     	* @apiResponse Array of Blog objects
@@ -50,11 +51,13 @@ export class BlogController{
                 return res.send(AppResponse(null, 400, errors.array()));
             }
 
+            const {id} = req.user;
+
             let blogObj = new Blog();
             blogObj.title = req.body.title;
             blogObj.description = req.body.description;
 
-            let user = await this.userService.getUserById(1);
+            let user = await this.userService.getUserById(id);
 
             blogObj.user = user as User;
 
@@ -67,7 +70,7 @@ export class BlogController{
 
       public routes(){
         this.router.get('/', this.index);
-        this.router.post('/', [
+        this.router.post('/', auth, [
             body('title').exists().withMessage("Title is required!"),
             body('description').exists().withMessage("Description is required!")
         ], this.create);
