@@ -12,8 +12,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const typeorm_1 = require("typeorm");
 const user_repository_1 = require("../repository/user.repository");
+/**
+ * User service class for user related operations like authentication, login, register
+ */
 class UserService {
+    /**
+     * Represents a User service
+     * @constructor
+     * @param {none} NA
+     * @description Initializes required repositories
+     */
     constructor() {
+        /**
+         * Method to retieve user
+         * @param {String} username - Username of the user
+         * @returns {User} Object of the user
+         */
         this.login = (username) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.userRepo.findOne({
@@ -27,6 +41,11 @@ class UserService {
                 return null;
             }
         });
+        /**
+         * Method to retieve user by username
+         * @param {String} username - Username of the user
+         * @returns {User} Object of the user with username and email only
+         */
         this.getUser = (username) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.userRepo.findOne({
@@ -41,6 +60,11 @@ class UserService {
                 return null;
             }
         });
+        /**
+         * Method to retieve user by id
+         * @param {Number} id - ID of the user
+         * @returns {User} Object of the user
+         */
         this.getUserById = (id) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this.userRepo.findOne({
@@ -52,6 +76,11 @@ class UserService {
                 return null;
             }
         });
+        /**
+         * Method to create a new user
+         * @param {User} user - User object
+         * @returns {User} Object of newly created user
+         */
         this.register = (user) => __awaiter(this, void 0, void 0, function* () {
             try {
                 let usrObj = yield this.userRepo.findOne({
