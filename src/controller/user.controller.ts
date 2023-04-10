@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator';
 import { UserService } from "../services/user.service";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
+import { auth } from "../middleware/authMiddleware";
 
 export class UserController{
     // Variable declaration for Router and User service
@@ -113,6 +114,20 @@ export class UserController{
         }
     }
 
+    /**
+    	* @apiType GET
+    	* @apiPath /api/user
+    	* @apiBody NA
+    	* @apiKey Get User
+    	* @apiDescription Returns user data for authenticated user
+    	* @apiResponse User data object
+    	*/
+        public getUser = async (req: Request, res: Response) => {
+            if(req.user)
+                return res.send(AppResponse(req.user, 200, {}))
+                return res.send(AppResponse(null, 401, {}))
+        }
+
     public routes(){
         this.router.post('/login', [
             body('username').exists().withMessage('Username is required!'),
@@ -125,6 +140,7 @@ export class UserController{
             body('email').exists().withMessage('Email is required!')
             .isEmail().withMessage('Invalid email, please enter valid email!')
         ], this.register);
+        this.router.get('/', auth, this.getUser);
     }
 
 

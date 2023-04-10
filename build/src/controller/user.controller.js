@@ -19,6 +19,7 @@ const express_validator_1 = require("express-validator");
 const user_service_1 = require("../services/user.service");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const authMiddleware_1 = require("../middleware/authMiddleware");
 class UserController {
     /**
      * @constructor UserController
@@ -104,6 +105,19 @@ class UserController {
                 return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
             }
         });
+        /**
+            * @apiType GET
+            * @apiPath /api/user
+            * @apiBody NA
+            * @apiKey Get User
+            * @apiDescription Returns user data for authenticated user
+            * @apiResponse User data object
+            */
+        this.getUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            if (req.user)
+                return res.send((0, AppResponse_1.AppResponse)(req.user, 200, {}));
+            return res.send((0, AppResponse_1.AppResponse)(null, 401, {}));
+        });
         this.router = (0, express_1.Router)();
         this.routes();
         this.userService = new user_service_1.UserService();
@@ -120,6 +134,7 @@ class UserController {
             (0, express_validator_1.body)('email').exists().withMessage('Email is required!')
                 .isEmail().withMessage('Invalid email, please enter valid email!')
         ], this.register);
+        this.router.get('/', authMiddleware_1.auth, this.getUser);
     }
 }
 exports.UserController = UserController;

@@ -4,6 +4,7 @@ import "reflect-metadata"
 import { createConnection } from "typeorm"
 import { BlogController } from './src/controller/blog.controller';
 import { UserController } from './src/controller/user.controller';
+const cors = require('cors');
 
 class Server {
   private blogController!: BlogController;
@@ -31,8 +32,7 @@ class Server {
    */
   public configuration() {
     this.app.set('port', process.env.PORT || 3000);
-    console.log();
-    
+    this.app.use(cors())
     this.app.use(express.json());
   }
 
@@ -59,6 +59,16 @@ class Server {
 
     this.blogController = new BlogController();
     this.userController = new UserController();
+
+    this.app.use((req: Request, res: Response, next) => {
+      res.header('Access-Control-Allow-Origin', '*')
+      res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT')
+      // res.header(
+      //   'Access-Control-Allow-Headers',
+      //   'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+      // )
+      next()
+    })
 
     this.app.get( "/", async (req: Request, res: Response ) => {
       res.send( "Hello world!" );      

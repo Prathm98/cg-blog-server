@@ -6,6 +6,7 @@ import { Blog } from "../database/entities/blog.entity";
 import { UserService } from "../services/user.service";
 import { User } from "../database/entities/user.entity";
 import { auth } from "../middleware/authMiddleware";
+import { decodeToken } from "../utils/helpers";
 
 export class BlogController{
     public router: Router;
@@ -29,7 +30,15 @@ export class BlogController{
     	*/
     public index = async (req: Request, res: Response) => {
         try {
-            let blogs = await this.blogService.getBlogs();
+            let token = req.headers.authorization;
+            let userId = 0;
+
+            if(token) {
+                let user = decodeToken(token);
+                userId = user.id;
+            }
+            
+            let blogs = await this.blogService.getBlogs(userId);
             res.send(AppResponse(blogs));
         } catch (error) {
             return res.send(AppResponse('Server Error', 500, {}))
@@ -163,7 +172,7 @@ export class BlogController{
         this.router.post('/:blog_id/comment', auth, [
             body('message').exists().withMessage("Message is required!")
         ], this.blogComment);
-      }
+    }
 
 
 }

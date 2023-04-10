@@ -35,12 +35,13 @@ export class BlogService {
     public getBlogs = async (userId = 0) => {
         try {
             const blogs = await getConnection('blog').manager.query(`
-                select r.*, count(l.id) as likes FROM 
+                select r.*, u.username, count(l.id) as likes FROM 
                     (SELECT b.*, count(c.id) as comments, 
                         (SELECT COUNT(*) FROM cg_blog.likes where userId=${userId} AND blogId=b.id) as isLiked
                         FROM cg_blog.blogs as b LEFT JOIN cg_blog.comments as c on b.id = c.blogId
                     group by b.id) as r
                     LEFT JOIN cg_blog.likes as l on r.id = l.blogId
+                    LEFT JOIN cg_blog.users as u on r.userId = u.id
                     group by (r.id);`);
 
             // const blogs = await this.blogRepo.find({

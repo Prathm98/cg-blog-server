@@ -18,6 +18,7 @@ require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const blog_controller_1 = require("./src/controller/blog.controller");
 const user_controller_1 = require("./src/controller/user.controller");
+const cors = require('cors');
 class Server {
     constructor() {
         if (process.env.NODE_ENV !== 'production') {
@@ -37,7 +38,7 @@ class Server {
      */
     configuration() {
         this.app.set('port', process.env.PORT || 3000);
-        console.log();
+        this.app.use(cors());
         this.app.use(express_1.default.json());
     }
     /**
@@ -62,6 +63,15 @@ class Server {
             });
             this.blogController = new blog_controller_1.BlogController();
             this.userController = new user_controller_1.UserController();
+            this.app.use((req, res, next) => {
+                res.header('Access-Control-Allow-Origin', '*');
+                res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
+                // res.header(
+                //   'Access-Control-Allow-Headers',
+                //   'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+                // )
+                next();
+            });
             this.app.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
                 res.send("Hello world!");
             }));

@@ -17,6 +17,7 @@ const express_validator_1 = require("express-validator");
 const blog_entity_1 = require("../database/entities/blog.entity");
 const user_service_1 = require("../services/user.service");
 const authMiddleware_1 = require("../middleware/authMiddleware");
+const helpers_1 = require("../utils/helpers");
 class BlogController {
     constructor() {
         /**
@@ -29,7 +30,13 @@ class BlogController {
             */
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                let blogs = yield this.blogService.getBlogs();
+                let token = req.headers.authorization;
+                let userId = 0;
+                if (token) {
+                    let user = (0, helpers_1.decodeToken)(token);
+                    userId = user.id;
+                }
+                let blogs = yield this.blogService.getBlogs(userId);
                 res.send((0, AppResponse_1.AppResponse)(blogs));
             }
             catch (error) {
