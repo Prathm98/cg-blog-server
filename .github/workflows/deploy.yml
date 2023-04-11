@@ -1,24 +1,44 @@
 name: CG server
 
-# Trigger deployment only on push to master branch
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
+    
 jobs:
-  deploy:
-    name: Deploy to EC2 on main branch push
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the files
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v2.1.5
+      - name: Deploy in EC2
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.HOSTNAME }}
-          REMOTE_USER: ${{ secrets.USER }}
-          TARGET: '/home/ec2-user/cg-server'
+            PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME  }}
+            USER_NAME : ${{ secrets.USER  }}
+            
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          
+            DIR="/home/ec2-user/server"
+            #npx pm2 delete all
+            cd /home/ec2-user
+            
+            if [ ! -d $DIR ]
+            then
+              mkdir server &&
+              git clone https://github.com/Prathm98/cg-blog-server.git server &&
+              cd server &&
+              npm i
+            else
+              cd server
+            fi
+            
+            git checkout main &&
+            git fetch --all &&
+            git reset --hard origin/main &&
+            git pull origin main &&
+            pm2 start build/index.js
+          '
+            
