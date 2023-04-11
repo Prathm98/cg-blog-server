@@ -87,7 +87,48 @@ export class BlogService {
      */
     public getBlogById = async (blog_id: number) => {
         try {
-            const blog = await this.blogRepo.findOne({id: blog_id});
+            const blog = await this.blogRepo.findOne({
+                where: {id: blog_id},
+                relations: ['user']
+            });
+            return blog;
+        } catch (error) {
+            console.error(error)
+            return null;
+        }      
+    }
+
+    /**
+     * Method to get Likes by blog ID
+     * @param {Number} blog_id - Blog ID 
+     * @returns {Like[]} Array of like objects
+     */
+    public getLikesByBlogId = async (blog_id: number) => {
+        try {
+            const blog = await getConnection('blog').manager.query(`SELECT
+                    l.created, u.username
+                FROM likes l LEFT JOIN users u on u.id = l.userId
+                where l.blogId=${blog_id}`)
+            
+            return blog;
+        } catch (error) {
+            console.error(error)
+            return null;
+        }      
+    }
+
+    /**
+     * Method to get comments by blog ID
+     * @param {Number} blog_id - Blog ID 
+     * @returns {Comment[]} Array of comment objects
+     */
+    public getCommentsByBlogId = async (blog_id: number) => {
+        try {
+            const blog = await getConnection('blog').manager.query(`SELECT
+                    c.created, u.username, c.comment
+                FROM comments c LEFT JOIN users u on u.id = c.userId
+                where c.blogId=${blog_id}`)
+            
             return blog;
         } catch (error) {
             console.error(error)

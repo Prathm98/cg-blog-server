@@ -46,6 +46,27 @@ export class BlogController{
     }
 
     /**
+    	* @apiType GET
+    	* @apiPath /api/blog/:blog_id
+    	* @apiBody NA
+    	* @apiKey Get Blog by id
+    	* @apiDescription Returns blog for id
+    	* @apiResponse Blog object
+    	*/
+        public getBlog = async (req: Request, res: Response) => {
+            try {
+                let blog_id = req.params.blog_id;
+               
+                let blog = await this.blogService.getBlogById(+blog_id);
+                let likes = await this.blogService.getLikesByBlogId(+blog_id);
+                let comments = await this.blogService.getCommentsByBlogId(+blog_id);
+                res.send(AppResponse({blog, likes, comments}));
+            } catch (error) {
+                return res.send(AppResponse('Server Error', 500, {}))
+            }
+        }
+
+    /**
     	* @apiType POST
     	* @apiPath /api/blog
     	* @apiBody {"title": "String", "description":"String"}
@@ -113,9 +134,8 @@ export class BlogController{
             }else{
                 result = await this.blogService.removeLike(blog, user);
             }
-            console.log(doLike, result);
+            // console.log(doLike, result);
             
-        
             res.send(AppResponse("Successful"));
         } catch (error) {
             return res.send(AppResponse('Server Error', 500, {}))
@@ -162,6 +182,7 @@ export class BlogController{
 
     public routes(){
         this.router.get('/', this.index);
+        this.router.get('/:blog_id', this.getBlog);
         this.router.post('/', auth, [
             body('title').exists().withMessage("Title is required!"),
             body('description').exists().withMessage("Description is required!")

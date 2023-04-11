@@ -44,6 +44,26 @@ class BlogController {
             }
         });
         /**
+            * @apiType GET
+            * @apiPath /api/blog/:blog_id
+            * @apiBody NA
+            * @apiKey Get Blog by id
+            * @apiDescription Returns blog for id
+            * @apiResponse Blog object
+            */
+        this.getBlog = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                let blog_id = req.params.blog_id;
+                let blog = yield this.blogService.getBlogById(+blog_id);
+                let likes = yield this.blogService.getLikesByBlogId(+blog_id);
+                let comments = yield this.blogService.getCommentsByBlogId(+blog_id);
+                res.send((0, AppResponse_1.AppResponse)({ blog, likes, comments }));
+            }
+            catch (error) {
+                return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
+            }
+        });
+        /**
             * @apiType POST
             * @apiPath /api/blog
             * @apiBody {"title": "String", "description":"String"}
@@ -102,7 +122,7 @@ class BlogController {
                 else {
                     result = yield this.blogService.removeLike(blog, user);
                 }
-                console.log(doLike, result);
+                // console.log(doLike, result);
                 res.send((0, AppResponse_1.AppResponse)("Successful"));
             }
             catch (error) {
@@ -148,6 +168,7 @@ class BlogController {
     }
     routes() {
         this.router.get('/', this.index);
+        this.router.get('/:blog_id', this.getBlog);
         this.router.post('/', authMiddleware_1.auth, [
             (0, express_validator_1.body)('title').exists().withMessage("Title is required!"),
             (0, express_validator_1.body)('description').exists().withMessage("Description is required!")
