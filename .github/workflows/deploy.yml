@@ -22,7 +22,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}
           
             DIR="/home/ec2-user/server"
-            pm2 delete all
+            npx pm2 delete all
             cd /home/ec2-user
             
             if [ ! -d $DIR ]
