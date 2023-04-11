@@ -31,6 +31,7 @@ jobs:
               git clone https://github.com/Prathm98/cg-blog-server.git server &&
               cd server &&
               npm i
+              npx tsc
             else
               cd server
             fi
