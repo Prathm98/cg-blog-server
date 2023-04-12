@@ -11,7 +11,7 @@ export class Blog {
     @Column()
     title!: string
 
-    @Column()
+    @Column({type: 'longtext'})
     description!: string
 
     @CreateDateColumn({nullable: true})

@@ -67,6 +67,29 @@ export class BlogController{
         }
 
     /**
+    	* @apiType GET
+    	* @apiPath /api/blog/:user_id
+    	* @apiBody NA
+    	* @apiKey Get Blog by user id
+    	* @apiDescription Return blogs for user id
+    	* @apiResponse Array of Blog objects
+    	*/
+        public getBlogByUsername = async (req: Request, res: Response) => {
+            try {
+                let username = req.params.username;
+                let user = await this.userService.getUser(username);
+                
+                if(user){
+                    let blogs = await this.blogService.getBlogsByUserId(user.id);
+                    res.send(AppResponse({blogs, user}));
+                }else
+                    res.send(AppResponse("Username not found!", 401, {}));
+            } catch (error) {
+                return res.send(AppResponse('Server Error', 500, {}))
+            }
+        }
+
+    /**
     	* @apiType POST
     	* @apiPath /api/blog
     	* @apiBody {"title": "String", "description":"String"}
@@ -183,6 +206,7 @@ export class BlogController{
     public routes(){
         this.router.get('/', this.index);
         this.router.get('/:blog_id', this.getBlog);
+        this.router.get('/user/:username', this.getBlogByUsername);
         this.router.post('/', auth, [
             body('title').exists().withMessage("Title is required!"),
             body('description').exists().withMessage("Description is required!")

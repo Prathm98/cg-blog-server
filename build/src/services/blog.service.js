@@ -42,7 +42,7 @@ class BlogService {
                     group by b.id) as r
                     LEFT JOIN cg_blog.likes as l on r.id = l.blogId
                     LEFT JOIN cg_blog.users as u on r.userId = u.id
-                    group by (r.id);`);
+                    group by (r.id) order by r.created desc;`);
                 // const blogs = await this.blogRepo.find({
                 //     relations: ['user', 'comments', 'likes'],
                 //     select: ['user', 'title']
@@ -69,7 +69,7 @@ class BlogService {
                         WHERE b.userId=${userId}
                     group by b.id) as r
                     LEFT JOIN cg_blog.likes as l on r.id = l.blogId
-                    group by (r.id);`);
+                    group by (r.id) order by r.created desc;`);
                 return blogs;
             }
             catch (error) {
@@ -123,7 +123,7 @@ class BlogService {
                 const blog = yield (0, typeorm_1.getConnection)('blog').manager.query(`SELECT
                     c.created, u.username, c.comment
                 FROM comments c LEFT JOIN users u on u.id = c.userId
-                where c.blogId=${blog_id}`);
+                where c.blogId=${blog_id}  order by c.created desc`);
                 return blog;
             }
             catch (error) {

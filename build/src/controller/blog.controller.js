@@ -64,6 +64,29 @@ class BlogController {
             }
         });
         /**
+            * @apiType GET
+            * @apiPath /api/blog/:user_id
+            * @apiBody NA
+            * @apiKey Get Blog by user id
+            * @apiDescription Return blogs for user id
+            * @apiResponse Array of Blog objects
+            */
+        this.getBlogByUsername = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                let username = req.params.username;
+                let user = yield this.userService.getUser(username);
+                if (user) {
+                    let blogs = yield this.blogService.getBlogsByUserId(user.id);
+                    res.send((0, AppResponse_1.AppResponse)({ blogs, user }));
+                }
+                else
+                    res.send((0, AppResponse_1.AppResponse)("Username not found!", 401, {}));
+            }
+            catch (error) {
+                return res.send((0, AppResponse_1.AppResponse)('Server Error', 500, {}));
+            }
+        });
+        /**
             * @apiType POST
             * @apiPath /api/blog
             * @apiBody {"title": "String", "description":"String"}
@@ -169,6 +192,7 @@ class BlogController {
     routes() {
         this.router.get('/', this.index);
         this.router.get('/:blog_id', this.getBlog);
+        this.router.get('/user/:username', this.getBlogByUsername);
         this.router.post('/', authMiddleware_1.auth, [
             (0, express_validator_1.body)('title').exists().withMessage("Title is required!"),
             (0, express_validator_1.body)('description').exists().withMessage("Description is required!")

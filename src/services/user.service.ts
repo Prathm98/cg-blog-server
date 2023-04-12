@@ -48,7 +48,7 @@ export class UserService {
             where: {
               username,
             },
-            select: ['username', 'email']
+            select: ['id', 'name']
           })
           return user
         } catch (e) {

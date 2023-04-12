@@ -25,7 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], Blog.prototype, "title", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: 'longtext' }),
     __metadata("design:type", String)
 ], Blog.prototype, "description", void 0);
 __decorate([

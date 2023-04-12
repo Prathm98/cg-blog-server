@@ -49,10 +49,10 @@ export class UserController{
             }
     
             const payload = {
-            user: {
-                id: user.id,
-                username: user.username,
-            },
+                user: {
+                    id: user.id,
+                    username: user.username,
+                },
             }
             let jwt_secret = process.env.JWT_SECRET as string;
 
