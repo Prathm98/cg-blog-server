@@ -75,8 +75,15 @@ class BlogController {
             try {
                 let username = req.params.username;
                 let user = yield this.userService.getUser(username);
+                // Check if user logged in
+                let token = req.headers.authorization;
+                let userId = 0;
+                if (token) {
+                    let user = (0, helpers_1.decodeToken)(token);
+                    userId = user.id;
+                }
                 if (user) {
-                    let blogs = yield this.blogService.getBlogsByUserId(user.id);
+                    let blogs = yield this.blogService.getBlogsByUserId(user.id, userId);
                     res.send((0, AppResponse_1.AppResponse)({ blogs, user }));
                 }
                 else

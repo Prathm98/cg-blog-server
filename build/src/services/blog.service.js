@@ -59,12 +59,12 @@ class BlogService {
          * @param {Number} userId - User id for which wants to retieve blogs
          * @returns {Blog[]} Array of blogs for the user
          */
-        this.getBlogsByUserId = (userId) => __awaiter(this, void 0, void 0, function* () {
+        this.getBlogsByUserId = (userId, currentUser) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const blogs = yield (0, typeorm_1.getConnection)('blog').manager.query(`
                 select r.*, count(l.id) as likes FROM 
                     (SELECT b.*, count(c.id) as comments, 
-                        (SELECT COUNT(*) FROM cg_blog.likes where userId=${userId} AND blogId=b.id) as isLiked
+                        (SELECT COUNT(*) FROM cg_blog.likes where userId=${currentUser} AND blogId=b.id) as isLiked
                         FROM cg_blog.blogs as b LEFT JOIN cg_blog.comments as c on b.id = c.blogId
                         WHERE b.userId=${userId}
                     group by b.id) as r
