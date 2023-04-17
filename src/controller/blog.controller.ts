@@ -78,9 +78,18 @@ export class BlogController{
             try {
                 let username = req.params.username;
                 let user = await this.userService.getUser(username);
+
+                // Check if user logged in
+                let token = req.headers.authorization;
+                let userId = 0;
+
+                if(token) {
+                    let user = decodeToken(token);
+                    userId = user.id;
+                }
                 
                 if(user){
-                    let blogs = await this.blogService.getBlogsByUserId(user.id);
+                    let blogs = await this.blogService.getBlogsByUserId(user.id, userId);
                     res.send(AppResponse({blogs, user}));
                 }else
                     res.send(AppResponse("Username not found!", 401, {}));
